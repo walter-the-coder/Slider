@@ -32,6 +32,7 @@
 			width: 20px;
 			background-color: green;
 			border-radius: 2px;
+			margin: 0px 10px;
 		}
 
 		/*Just remove this section! This is only to display the slider value and markup for input fields etc*/
@@ -82,9 +83,10 @@
 		var slider = $("#slider1");
 		var sliderHead = slider.children(".sliderHead");
 		var sliderHead_Width_Half = sliderHead.width();
-		var maxSlideX = slider.width() + slider.offset().left +sliderHead_Width_Half;
-		var minSlideX = slider.offset().left +sliderHead_Width_Half;
+		var maxSlideX = slider.width() + slider.offset().left;
+		var minSlideX = slider.offset().left;
 		var slideActive = false;
+		var moveHeadToThisXCoord = 0;
 
 		//Default min and max slider values
 		var sliderMinValue = 0;
@@ -96,11 +98,15 @@
 		function moveSlider(mouseMovementX){
 			var sliderHead_WidthAndOffset = sliderHead_Width_Half + slider.offset().left;
 			
-			var moveHeadToThisXCoord = (mouseMovementX > minSlideX && mouseMovementX < maxSlideX) ? mouseMovementX : moveHeadToThisXCoord;
+
+			if(mouseMovementX < minSlideX){ moveHeadToThisXCoord = minSlideX}
+			else if(mouseMovementX > maxSlideX){moveHeadToThisXCoord=maxSlideX}
+			else{moveHeadToThisXCoord=mouseMovementX}
+
 			sliderHead.css({"left" : (moveHeadToThisXCoord - sliderHead_WidthAndOffset) + "px"});
 
 			//Sets the slider value that we have defined in the top of this script. This value can be used as you like
-			sliderValue = (( (sliderMaxValue - sliderMinValue) / (maxSlideX-minSlideX) ) * (mouseMovementX - slider.offset().left)) +sliderMinValue;
+			sliderValue = (( (sliderMaxValue - sliderMinValue) / (maxSlideX-minSlideX) ) * (moveHeadToThisXCoord - slider.offset().left)) + sliderMinValue;
 			
 			//Just remove this line! Only to show the value in html
 			$("#sliderValue").text(sliderValue);
@@ -117,7 +123,7 @@
 				slideActive = false;
 			});
 
-			slider.on("mousemove", function(event){
+			$("body").on("mousemove", function(event){
 				if(slideActive){
 					moveSlider(event.pageX);
 				}
