@@ -14,6 +14,14 @@
 			height: 50px;
 			margin: 20px 200px;
 			cursor: pointer;
+
+			-webkit-user-select: none;  /* Chrome all / Safari all */
+			-moz-user-select: none;     /* Firefox all */
+			-ms-user-select: none;      /* IE 10+ */
+
+			/* No support for these yet, use at own risk */
+			-o-user-select: none;
+			user-select: none; 
 		}
 		.sliderBackground{
 			background-color: #ccc;
@@ -92,21 +100,27 @@
 			});
 
 			//Move sliderhead if mousebutton is down and we are still inside the slider container
-			slider.mousemove(function(event){
+			slider.on("mousemove", function(event){
 				event.preventDefault();
 				if(slideActive){
 					moveSlider(event.pageX);
 				}
 			});
 
-			sliderHead.mousemove(function(event){
+			slider.on("touchmove", function(event){
+				event.preventDefault();
+				var touch = event.originalEvent.touches[0];
+				moveSlider(touch.pageX);
+			});
+
+			sliderHead.on("touchmove mousemove", function(event){
 				event.preventDefault();
 				if(slideActive){
 					moveSlider(event.pageX);
 				}
 			});
 			//If we click on the slider, we want the sliderhead to move to that position
-			slider.on("click", function(event){
+			slider.on("touchstart click", function(event){
 				moveSlider(event.pageX);
 			});
 
