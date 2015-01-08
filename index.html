@@ -6,9 +6,11 @@
 	<style>
 		/* Slider markup */
 		.slider{
-			width: 500px;
+			min-width: 200px;
+			max-width: 500px;
 			height: 50px;
-			margin: 20px 200px;
+			margin: 20px auto;
+			padding: 0px 10px;
 			cursor: pointer;
 
 			-webkit-user-select: none;
@@ -38,6 +40,11 @@
 		/*Just remove this section! This is only to display the slider value and markup for input fields etc*/
 		body{
 			font-size: 16px;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			-o-user-select: none;
+			user-select: none; 
 		}
 
 		#sliderValue{
@@ -75,7 +82,9 @@
 	<input type="text" name="maxvalue" id="maxvalue"/>
 	<p id="curMax">Current maxvalue</p>
 	<button id="changeValues">Change</button>
-
+	<br />
+	<br />
+	<a href="https://github.com/TheLastCard/Slider">Download from Github</a>
 	<!-- Slider scripts -->
 	<script src="js/jquery-1.11.2.min.js" value="2"></script>
 	<script>
@@ -83,8 +92,8 @@
 		var slider = $("#slider1");
 		var sliderHead = slider.children(".sliderHead");
 		var sliderHead_Width_Half = sliderHead.width();
-		var maxSlideX = slider.width() + slider.offset().left;
-		var minSlideX = slider.offset().left;
+		var maxSlideX;
+		var minSlideX;
 		var slideActive = false;
 		var moveHeadToThisXCoord = 0;
 
@@ -94,6 +103,11 @@
 
 		//Here is the slider value for your use. If you want it to be a round number, just use Math.round(sliderValue);
 		var sliderValue = 0;
+
+		function setSliderMinAndMax(){
+			maxSlideX = slider.width() + slider.offset().left;
+			minSlideX = slider.offset().left;
+		}
 
 		function moveSlider(mouseMovementX){
 			var sliderHead_WidthAndOffset = sliderHead_Width_Half + slider.offset().left;
@@ -113,7 +127,13 @@
 
 		}
 
+		$( window ).resize(function() {
+		  	setSliderMinAndMax();
+		});
+
 		$(function(){
+			setSliderMinAndMax();
+
 			//TOGGLE FUNCTIONS
 			sliderHead.on("mousedown", function(){
 				slideActive = true;
