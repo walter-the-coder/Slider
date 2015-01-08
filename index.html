@@ -4,22 +4,16 @@
 	<meta charset="UTF-8" />
 	<title>Walters slider</title>
 	<style>
-		/*In order to use rem for font-size, remember to set base size first*/
-		body{
-			font-size: 16px;
-		}
-
+		/* Slider markup */
 		.slider{
 			width: 500px;
 			height: 50px;
 			margin: 20px 200px;
 			cursor: pointer;
 
-			-webkit-user-select: none;  /* Chrome all / Safari all */
-			-moz-user-select: none;     /* Firefox all */
-			-ms-user-select: none;      /* IE 10+ */
-
-			/* No support for these yet, use at own risk */
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
 			-o-user-select: none;
 			user-select: none; 
 		}
@@ -40,73 +34,94 @@
 			border-radius: 2px;
 		}
 
-		/*This is only to display the slider value*/
+		/*Just remove this section! This is only to display the slider value and markup for input fields etc*/
+		body{
+			font-size: 16px;
+		}
+
 		#sliderValue{
 			font-size: arial;
 			font-size: 2rem;
+		}
+
+		label,
+		p{
+			font-size: 1.5rem;
 		}
 	</style>
 
 </head>
 <body>
 	<br />
-
+	
+	<!-- Markup for slider -->
 	<div class="slider" id="slider1">
 		<div class="sliderBackground"></div>
 		<div class="sliderHead"></div>
 	</div>
 
-	<div id="sliderValue"></div>
+	<!-- Just remove this section! HTML divs here are only for showing the slider values and letting you choose values etc -->
+	<hr />
+	<div id="sliderValue">No value yet</div>
+	<hr />
+	<label for="minvalue">Type a minimum value</label>
+	<input type="text" name="minvalue" id="minvalue"/>
+	<p id="curMin">Current minvalue</p>
+	<br />
+	<label for="maxvalue">Type a maximum value</label>
+	<input type="text" name="maxvalue" id="maxvalue"/>
+	<p id="curMax">Current maxvalue</p>
+	<button id="changeValues">Change</button>
 
-	<script src="js/jquery-1.11.2.min.js"></script>
+	<!-- Slider scripts -->
+	<script src="js/jquery-1.11.2.min.js" value="2"></script>
 	<script>
+
+		var slider = $("#slider1");
+		var sliderHead = slider.children(".sliderHead");
+		var sliderHead_Width_Half = sliderHead.width();
+		var maxSlideX = slider.width() + slider.offset().left +sliderHead_Width_Half;
+		var minSlideX = slider.offset().left +sliderHead_Width_Half;
+		var slideActive = false;
+
+		//Default min and max slider values
+		var sliderMinValue = 0;
+		var sliderMaxValue = 10;
+
+		//Here is the slider value for your use. If you want it to be a round number, just use Math.round(sliderValue);
+		var sliderValue = 0;
+
+		function moveSlider(mouseMovementX){
+			var sliderHead_WidthAndOffset = sliderHead_Width_Half + slider.offset().left;
+			
+			var moveHeadToThisXCoord = (mouseMovementX > minSlideX && mouseMovementX < maxSlideX) ? mouseMovementX : moveHeadToThisXCoord;
+			sliderHead.css({"left" : (moveHeadToThisXCoord - sliderHead_WidthAndOffset) + "px"});
+
+			//Sets the slider value that we have defined in the top of this script. This value can be used as you like
+			sliderValue = (( (sliderMaxValue - sliderMinValue) / (maxSlideX-minSlideX) ) * (mouseMovementX - slider.offset().left)) +sliderMinValue;
+			
+			//Just remove this line! Only to show the value in html
+			$("#sliderValue").text(sliderValue);
+
+		}
+
 		$(function(){
-			var slider = $("#slider1");
-			var sliderHead = slider.children(".sliderHead");
-			var maxSlideX = slider.width() + slider.offset().left;
-			var minSlideX = slider.offset().left;
-			var slideActive = false;
-			var sliderMinValue = 0.0;
-			var sliderMaxValue = 10.0;
-			var sliderValue = 0;
-
-			function moveSlider(mouseMovementX){
-				var sliderHeadWidthAndOffset = (sliderHead.width()/2) + slider.offset().left;
-
-				if(mouseMovementX > minSlideX && mouseMovementX < maxSlideX){
-					var moveHeadToThisXCoord = mouseMovementX;
-					sliderHead.css({"left" : (moveHeadToThisXCoord - sliderHeadWidthAndOffset) + "px"});
-					
-					sliderValue = (sliderMaxValue / (maxSlideX-minSlideX) ) * (mouseMovementX - slider.offset().left);
-					$("#sliderValue").text(sliderValue);
-				}
-			}
-
 			//TOGGLE FUNCTIONS
 			sliderHead.on("mousedown", function(){
 				slideActive = true;
 			});
 
-			sliderHead.on("mouseup", function(){
+			$("body").on("mouseup", function(){
 				slideActive = false;
 			});
 
-			slider.on("mouseup", function(){
-				slideActive = false;
-			});
-
-			slider.on("mouseleave", function(){
-				slideActive = false;
-			});
-
-			//Move sliderhead if mousebutton is down and we are still inside the slider container
 			slider.on("mousemove", function(event){
-				event.preventDefault();
 				if(slideActive){
 					moveSlider(event.pageX);
 				}
 			});
 
+			//For phones and touch devices
 			slider.on("touchmove", function(event){
 				event.preventDefault();
 				var touch = event.originalEvent.touches[0];
@@ -119,11 +134,34 @@
 					moveSlider(event.pageX);
 				}
 			});
-			//If we click on the slider, we want the sliderhead to move to that position
+
+			//If we click on the slider, we want the sliderhead to snap to that position
 			slider.on("touchstart click", function(event){
 				moveSlider(event.pageX);
 			});
+		});
+		
 
+
+
+		/*Just remove this block of code beneath here! Only for html showoff of the slider*/
+		function setMinAndMaxValues(){
+			sliderMinValue = $("#minvalue").val() != null && !isNaN(parseInt($("#minvalue").val())) ? parseInt($("#minvalue").val()) : sliderMinValue;
+			sliderMaxValue = $("#maxvalue").val() != null && !isNaN(parseInt($("#maxvalue").val())) ? parseInt($("#maxvalue").val()) : sliderMaxValue;
+			setMinAndMaxInfo();
+		}
+
+		function setMinAndMaxInfo(){
+			$("#curMin").text(sliderMinValue);
+			$("#curMax").text(sliderMaxValue);
+		}
+
+		$(function(){
+			setMinAndMaxInfo();
+			
+			$("#changeValues").on("click", function(){
+				setMinAndMaxValues();
+			});
 		});
 	</script>
 </body>
