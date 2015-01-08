@@ -109,9 +109,9 @@
 			maxSlideX = slider.width() + slider.offset().left;
 			minSlideX = slider.offset().left;
 
-			//If sliderValue is set we need to adjust the sliderHead to its correct position
+			// If sliderValue is set, then we need to adjust the sliderHead to its correct position. The reason for this long calculation below is to take into account if a value ranges from for example 5-10 and calculated correct position even after resize of the window.
 			if(sliderValue != null){
-				var sliderHead_MoveToPosition = ( (maxSlideX - sliderHead_WidthAndOffset ) / sliderMaxValue)*sliderValue;
+				var sliderHead_MoveToPosition = ( (maxSlideX - sliderHead_WidthAndOffset ) / (sliderMaxValue - sliderMinValue))*(sliderValue - sliderMinValue);
 				sliderHead.css({"left" : sliderHead_MoveToPosition + "px"});
 			}
 		}
