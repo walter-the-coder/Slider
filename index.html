@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Walters slider</title>
+	<style>
+		/*In order to use rem for font-size, remember to set base size first*/
+		body{
+			font-size: 16px;
+		}
+
+		.slider{
+			width: 500px;
+			height: 50px;
+			margin: 20px 200px;
+			cursor: pointer;
+		}
+		.sliderBackground{
+			background-color: #ccc;
+			border-radius: 5px;
+			height: 10px;
+			position: relative;
+			top: 20px;
+		}
+		.sliderHead{
+			position: relative;
+			left: 0px;
+			top: 5px;
+			height: 20px;
+			width: 20px;
+			background-color: green;
+			border-radius: 2px;
+		}
+
+		/*This is only to display the slider value*/
+		#sliderValue{
+			font-size: arial;
+			font-size: 2rem;
+		}
+	</style>
+
+</head>
+<body>
+	<br />
+
+	<div class="slider" id="slider1">
+		<div class="sliderBackground"></div>
+		<div class="sliderHead"></div>
+	</div>
+
+	<div id="sliderValue"></div>
+
+	<script src="js/jquery-1.11.2.min.js"></script>
+	<script>
+		$(function(){
+			var slider = $("#slider1");
+			var sliderHead = slider.children(".sliderHead");
+			var maxSlideX = slider.width() + slider.offset().left;
+			var minSlideX = slider.offset().left;
+			var slideActive = false;
+			var sliderMinValue = 0.0;
+			var sliderMaxValue = 10.0;
+			var sliderValue = 0;
+
+			function moveSlider(mouseMovementX){
+				var sliderHeadWidthAndOffset = (sliderHead.width()/2) + slider.offset().left;
+
+				if(mouseMovementX > minSlideX && mouseMovementX < maxSlideX){
+					var moveHeadToThisXCoord = mouseMovementX;
+					sliderHead.css({"left" : (moveHeadToThisXCoord - sliderHeadWidthAndOffset) + "px"});
+					
+					sliderValue = (sliderMaxValue / (maxSlideX-minSlideX) ) * (mouseMovementX - slider.offset().left);
+					$("#sliderValue").text(sliderValue);
+				}
+			}
+
+			//TOGGLE FUNCTIONS
+			sliderHead.on("mousedown", function(){
+				slideActive = true;
+			});
+
+			sliderHead.on("mouseup", function(){
+				slideActive = false;
+			});
+
+			slider.on("mouseup", function(){
+				slideActive = false;
+			});
+
+			slider.on("mouseleave", function(){
+				slideActive = false;
+			});
+
+			//Move sliderhead if mousebutton is down and we are still inside the slider container
+			slider.mousemove(function(event){
+				event.preventDefault();
+				if(slideActive){
+					moveSlider(event.pageX);
+				}
+			});
+
+			sliderHead.mousemove(function(event){
+				event.preventDefault();
+				if(slideActive){
+					moveSlider(event.pageX);
+				}
+			});
+			//If we click on the slider, we want the sliderhead to move to that position
+			slider.on("click", function(event){
+				moveSlider(event.pageX);
+			});
+
+		});
+	</script>
+</body>
+</html>
